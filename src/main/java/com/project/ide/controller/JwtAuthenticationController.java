@@ -1,5 +1,8 @@
 package com.project.ide.controller;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,11 +71,19 @@ public class JwtAuthenticationController {
 			responseMsg = "User with same email already exists";
 		}
 		else {
+			setupFiles(user.getUsername());
 			userDetailsService.save(user);
 			responseMsg = "Registered successfully";
 		}
 		
 		return new ResponseEntity(responseMsg, HttpStatus.OK);
+	}
+	
+	private void setupFiles(String dirname) throws IOException {
+		Boolean dir = new File("tmpStore/" + dirname).mkdir();
+		Boolean input = new File("tmpStore/" + dirname + "/input.txt").createNewFile();
+		Boolean output = new File("tmpStore/" + dirname + "/output.txt").createNewFile();
+		Boolean error = new File("tmpStore/" + dirname + "/error.txt").createNewFile();
 	}
 
 	private void authenticate(String username, String password) throws Exception {
