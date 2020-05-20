@@ -1,1 +1,0 @@
-print(" footer is bad ")
