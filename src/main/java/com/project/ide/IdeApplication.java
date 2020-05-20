@@ -13,6 +13,7 @@ public class IdeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(IdeApplication.class, args);
 		setupResourceDirectory();
+		setupUploadDirectory();
 		
 	}
 	
@@ -25,7 +26,19 @@ public class IdeApplication {
 				System.out.println("Failed to create resouce directory");
 			}
 		}
-		
+	}
+	
+	public static void setupUploadDirectory() {
+		String uploadDir = "src/main/resources/static/uploads/";
+		File UploadDir = new File(uploadDir);
+		Boolean dirCreated;
+		if(!UploadDir.exists()) {
+			dirCreated = UploadDir.mkdir();
+			if(!dirCreated) {
+				System.out.println("Failed to create uploads directory");
+			}
+			
+		}
 	}
 
 }
