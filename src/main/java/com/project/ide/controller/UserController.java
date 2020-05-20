@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.ide.config.JwtTokenUtil;
 import com.project.ide.dao.UserCodeDao;
 import com.project.ide.dao.UserDao;
+import com.project.ide.dao.UserDefaultDao;
 import com.project.ide.dto.UserCodeDto;
+import com.project.ide.dto.UserDefaultDto;
 import com.project.ide.model.User;
 import com.project.ide.model.UserCode;
+import com.project.ide.model.UserDefault;
 
 @RestController
 @CrossOrigin
@@ -27,6 +30,8 @@ public class UserController {
 	private UserDao userDao;
 	@Autowired
 	private UserCodeDao userCodeDao;
+	@Autowired
+	private UserDefaultDao userDefaultDao;
 
 	@RequestMapping(value = "/hello", method = RequestMethod.GET)
 	public ResponseEntity<?> hello() {
@@ -53,6 +58,21 @@ public class UserController {
 		return new ResponseEntity<>("Code has been saved", HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "save-defaults", method = RequestMethod.POST)
+	public ResponseEntity<?> saveDefaults(@RequestHeader("Authorization") String bearerToken, @RequestBody UserDefaultDto userDefaultDto) {
+		User currUser = resolveCurrentUser(bearerToken);
+		UserDefault newUserDefault = new UserDefault();
+		if(userDefaultDto.getId() != null) 
+			newUserDefault.setId(userDefaultDto.getId());
+		
+		newUserDefault.setDefaultCode(userDefaultDto.getDefaultCode());
+		newUserDefault.setFont(userDefaultDto.getFont());
+		newUserDefault.setLanguage(userDefaultDto.getLanguage());
+		newUserDefault.setTheme(userDefaultDto.getTheme());
+		newUserDefault.setUser(currUser);
+		userDefaultDao.save(newUserDefault);
+		return new ResponseEntity<>("User defaults have been saved", HttpStatus.OK);
+	}
 	
 	
 	private User resolveCurrentUser(String bearerToken) {
