@@ -4,6 +4,7 @@ public class TestResult {
 
 	private String output;
 	private Boolean error;
+	private String errorContext;
 	private String errorMsg;
 	private Double execTime;
 
@@ -35,8 +36,18 @@ public class TestResult {
 		return execTime;
 	}
 
-	public void setExecTime(Double execTime) {
-		this.execTime = execTime;
+	public void setExecTime(Double execTime2) {
+		this.execTime = execTime2;
 	}
+
+	public String getErrorContext() {
+		return errorContext;
+	}
+
+	public void setErrorContext(String errorContext) {
+		this.errorContext = errorContext;
+	}
+	
+	
 
 }

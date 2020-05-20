@@ -1,5 +1,6 @@
 package com.project.ide.service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -23,6 +24,12 @@ public class FileHandlerService {
         	content += (char)i;
         fr.close(); 
         return content;
+	}
+	
+	public void createNewFile(String filename) throws IOException {
+		File nf = new File(filename);
+		if(nf.exists()) return;
+		nf.createNewFile();
 	}
 
 }

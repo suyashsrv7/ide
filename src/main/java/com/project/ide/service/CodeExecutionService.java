@@ -1,7 +1,14 @@
 package com.project.ide.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.project.ide.dto.TestResult;
 
 @Service
 public class CodeExecutionService {
@@ -49,6 +56,78 @@ public class CodeExecutionService {
 			this.setErrMsg("Program Abort");
 		}
 	}
+	
+	public int executeCommand(List<String> cmds) throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder(cmds);
+        File op = new File(getCwd() + "output.txt");
+        File ip = new File(getCwd() + "input.txt");
+        File er = new File(getCwd() + "error.txt");
+        pb.directory(new File(getCwd()));
+        pb.redirectError(er);
+        pb.redirectInput(ip);
+        pb.redirectOutput(op);
+        Process p = pb.start();
+        Boolean finishOnTime = p.waitFor(3000, TimeUnit.MILLISECONDS);
+        int retVal;
+        if (!finishOnTime) {
+            p.destroy();
+            retVal = 255;
+        } else {
+            retVal = p.exitValue();
+
+        }
+        return retVal;
+    }
+	
+	public Boolean compile(List<String> cmds) throws IOException, InterruptedException {
+        if(cmds.isEmpty()) return true;
+        int retVal = executeCommand(cmds);
+        System.out.println("Compilation: " + retVal);
+        if(retVal != 0) {
+            handleErrors(retVal, "Compilation error");
+        }
+        return (retVal == 0);
+    }
+
+    public Boolean run(List<String> cmds) throws IOException, InterruptedException {
+        if(cmds.isEmpty()) return true;
+        int retVal = executeCommand(cmds);
+        System.out.println("Execution: " + retVal);
+        if(retVal != 0) {
+            handleErrors(retVal, "Runtime error");
+        }
+        return (retVal == 0);
+    }
+    
+    public TestResult execute(CodeExecutionUtils execUtils) throws IOException, InterruptedException {
+        setCwd(execUtils.getDirname());
+        fileHandler.createNewFile(execUtils.getDirname() + "srcFile" + execUtils.getFileExtension());
+        TestResult testResult = new TestResult();
+        long start = 0, end = 0; double execTime = 0;
+        if(compile(execUtils.getCompileCmds())) {
+        	start = System.nanoTime();
+        	run(execUtils.getRunCmds());
+            end = System.nanoTime();
+            execTime = (end - start) / 1000000000;
+            System.out.println("Executed SuccessFully: " + (end - start)/1000000000);
+        }
+        testResult.setExecTime(execTime);
+        if(getErrContext() != null) {
+        	testResult.setError(true);
+        	testResult.setErrorContext(getErrContext());
+        	if(getErrMsg() != null) {
+        		testResult.setErrorMsg(getErrMsg());
+        	}
+        	else {
+        		testResult.setErrorMsg(fileHandler.getFileContents(execUtils.getDirname() + "error.txt"));
+        	}
+        }
+        else {
+        	testResult.setError(false);
+        	testResult.setOutput(fileHandler.getFileContents(execUtils.getDirname() + "output.txt"));
+        }
+        return testResult;
+    }
 
 	
 
