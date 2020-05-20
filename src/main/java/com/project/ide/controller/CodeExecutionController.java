@@ -33,30 +33,34 @@ public class CodeExecutionController {
 
 	@RequestMapping(value="/run", method=RequestMethod.POST)
 	public ResponseEntity<?> run(@RequestBody TaskRequestDto task, @RequestHeader("Authorization") String bearerToken) throws IOException, InterruptedException {
-//		/* Task response setup */
+		/* Task response setup */
 		TaskResponseDto taskResponse = new TaskResponseDto();
 		taskResponse.setTotalInputs(task.getInputs().size());
 		List<TestResult> resultList = new ArrayList<>();
+		
 		/* Setting up Utils */
 		CodeExecutionUtils codeExecUtils = new CodeExecutionUtils();
 		codeExecUtils.setLanguage(task.getLanguage());
 		codeExecUtils.setDirname(resolveDirname(bearerToken));
-//		
-//		/* Setup srcFile */
+		int counter = 0;
+		
+		/* Setup srcFile */
 		fileHandler.setFileContents(codeExecUtils.getDirname() + "srcFile" + codeExecUtils.getFileExtension(), task.getCode());
-//		
-//		/* Main Service */
+		
+		/* Main Service */
 		CodeExecutionService codeExecService = new CodeExecutionService();
-//		
-//		/* Evaluating each input */
+		
+		/* Evaluating each input */
 		for(int i=0; i<task.getInputs().size(); i++) {
+			counter++;
 			fileHandler.setFileContents(codeExecUtils.getDirname() + "input.txt", task.getInputs().get(i));
 			if(i != 0) codeExecUtils.getCompileCmds().clear();
 			TestResult testResult = codeExecService.execute(codeExecUtils);
 			resultList.add(testResult);
 		}
+		
 		taskResponse.setTestResults(resultList);
-		System.out.println("SDf");
+		taskResponse.setTotalEvaluated(counter);
 		return new ResponseEntity(taskResponse, HttpStatus.OK);
 		
 	}
