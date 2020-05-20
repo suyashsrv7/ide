@@ -1,6 +1,6 @@
 target/
 tmpStore/
-src/resources/static/uploads
+src/main/resources/static/uploads
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
