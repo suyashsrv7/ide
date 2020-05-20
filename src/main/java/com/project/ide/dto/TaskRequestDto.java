@@ -1,10 +1,14 @@
 package com.project.ide.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class TaskRequestDto {
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+public class TaskRequestDto implements Serializable{
 	private String language;
 	private String code;
+	@JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
 	private List<String> inputs;
 	private long timeLimit;
 	public String getLanguage() {

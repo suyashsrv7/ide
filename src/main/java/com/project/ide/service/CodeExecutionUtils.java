@@ -3,6 +3,8 @@ package com.project.ide.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class CodeExecutionUtils {
 	
 	private List<String> compileCmds;
@@ -10,6 +12,9 @@ public class CodeExecutionUtils {
 	private String language;
 	private String fileExtension;
 	private String dirname;
+	
+	@Autowired
+	private FileHandlerService fileHandler;
 
 	public List<String> getCompileCmds() {
 		return compileCmds;

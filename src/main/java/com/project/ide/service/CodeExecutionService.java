@@ -1,6 +1,7 @@
 package com.project.ide.service;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -10,11 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.ide.dto.TestResult;
 
-@Service
 public class CodeExecutionService {
-
-	@Autowired
-	private FileHandlerService fileHandler;
 
 	private String cwd;
 	private String errContext;
@@ -101,7 +98,6 @@ public class CodeExecutionService {
     
     public TestResult execute(CodeExecutionUtils execUtils) throws IOException, InterruptedException {
         setCwd(execUtils.getDirname());
-        fileHandler.createNewFile(execUtils.getDirname() + "srcFile" + execUtils.getFileExtension());
         TestResult testResult = new TestResult();
         long start = 0, end = 0; double execTime = 0;
         if(compile(execUtils.getCompileCmds())) {
@@ -119,15 +115,28 @@ public class CodeExecutionService {
         		testResult.setErrorMsg(getErrMsg());
         	}
         	else {
-        		testResult.setErrorMsg(fileHandler.getFileContents(execUtils.getDirname() + "error.txt"));
+        		testResult.setErrorMsg(getFileContents(execUtils.getDirname() + "error.txt"));
         	}
         }
         else {
         	testResult.setError(false);
-        	testResult.setOutput(fileHandler.getFileContents(execUtils.getDirname() + "output.txt"));
+        	String op = getFileContents(execUtils.getDirname() + "output.txt");
+//        	String op = "";
+        	testResult.setOutput(op);
         }
         return testResult;
     }
+    
+    public String getFileContents(String dirname) throws IOException {
+		System.out.println(dirname);
+		FileReader fr=new FileReader(dirname);    
+        int i; String content = "";
+        while((i=fr.read())!=-1)    
+        	content += (char)i;
+        fr.close(); 
+        System.out.println("Content :" + content);
+        return content;
+	}
 
 	
 

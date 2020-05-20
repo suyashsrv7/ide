@@ -18,11 +18,13 @@ public class FileHandlerService {
 	}
 	
 	public String getFileContents(String dirname) throws IOException {
+		System.out.println(dirname);
 		FileReader fr=new FileReader(dirname);    
         int i; String content = "";
         while((i=fr.read())!=-1)    
         	content += (char)i;
         fr.close(); 
+        System.out.println("Content :" + content);
         return content;
 	}
 	
