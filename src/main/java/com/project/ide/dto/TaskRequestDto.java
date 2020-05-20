@@ -6,6 +6,7 @@ public class TaskRequestDto {
 	private String language;
 	private String code;
 	private List<String> inputs;
+	private long timeLimit;
 	public String getLanguage() {
 		return language;
 	}
@@ -24,5 +25,12 @@ public class TaskRequestDto {
 	public void setInputs(List<String> inputs) {
 		this.inputs = inputs;
 	}
+	public long getTimeLimit() {
+		return timeLimit;
+	}
+	public void setTimeLimit(long timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+	
 	
 }
