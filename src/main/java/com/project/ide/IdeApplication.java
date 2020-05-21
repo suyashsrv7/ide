@@ -53,11 +53,10 @@ public class IdeApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println("sdf");
-		mailClient.prepareAndSend("suyashsrv7@gmail.com", "sushantsrv17", "quark124");
-		System.out.println("sent");
+//		System.out.println("sdf");
+//		mailClient.prepareAndSend("suyashsrv7@gmail.com", "sushantsrv17", "quark124");
+//		System.out.println("sent");
 
-		
 	}
 	
 }
