@@ -31,6 +31,7 @@ import com.project.ide.model.UserCode;
 import com.project.ide.model.UserDefault;
 import com.project.ide.service.MailClient;
 
+@CrossOrigin
 @RestController
 
 public class UserController {
@@ -66,16 +67,20 @@ public class UserController {
 	@RequestMapping(value = "/save-code", method = RequestMethod.POST)
 	public ResponseEntity<?> saveCode(@RequestHeader("Authorization") String bearerToken,
 			@RequestBody UserCodeDto userCodeDto) {
+		MessageDto newMsg = new MessageDto();
 		User currUser = resolveCurrentUser(bearerToken);
 		UserCode newUserCode = new UserCode();
 		newUserCode.setId(userCodeDto.getId());
 		newUserCode.setContent(userCodeDto.getContent());
+		newUserCode.setTitle(userCodeDto.getTitle());
 		newUserCode.setLanguage(userCodeDto.getLanguage());
 		newUserCode.setType(userCodeDto.getType());
 		newUserCode.setSharable(userCodeDto.getSharable());
 		newUserCode.setUser(currUser);
 		userCodeDao.save(newUserCode);
-		return new ResponseEntity<>("Code has been saved", HttpStatus.OK);
+		newMsg.setErr(false);
+		newMsg.setMsg("Code has been saved");
+		return new ResponseEntity<>(newMsg, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/save-defaults", method = RequestMethod.POST)
@@ -92,7 +97,10 @@ public class UserController {
 		newUserDefault.setTheme(userDefaultDto.getTheme());
 		newUserDefault.setUser(currUser);
 		userDefaultDao.save(newUserDefault);
-		return new ResponseEntity<>("User defaults have been saved", HttpStatus.OK);
+		MessageDto newMsg = new MessageDto();
+		newMsg.setErr(false);
+		newMsg.setMsg("User defaults have been saved");
+		return new ResponseEntity<>(newMsg, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
@@ -101,7 +109,10 @@ public class UserController {
 		User currUser = resolveCurrentUser(bearerToken);
 		currUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 		userDao.save(currUser);
-		return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+		MessageDto newMsg = new MessageDto();
+		newMsg.setErr(false);
+		newMsg.setMsg("Password changed successfully");
+		return new ResponseEntity<>(newMsg, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -113,7 +124,7 @@ public class UserController {
 			return new ResponseEntity<>("File size too large", HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 		if (!"image".equals(type.split("/")[0])) {
-			return new ResponseEntity<>("Invalid file type", HttpStatus.UNPROCESSABLE_ENTITY);
+			return new ResponseEntity<>("Invalid image", HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 		User currUser = resolveCurrentUser(bearerToken);
 		String filename = currUser.getUsername() + "." + type.split("/")[1];
@@ -124,7 +135,10 @@ public class UserController {
 		fout.close();
 		currUser.setImgUrl("uploads/" + filename);
 		userDao.save(currUser);
-		return new ResponseEntity<>("File is uploaded successfully: uploads/" + filename, HttpStatus.OK);
+		MessageDto newMsg = new MessageDto();
+		newMsg.setErr(false);
+		newMsg.setMsg("File is uploaded successfully: uploads/" + filename);
+		return new ResponseEntity<>(newMsg, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/forgot-password", method = RequestMethod.GET)

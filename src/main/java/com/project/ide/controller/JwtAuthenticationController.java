@@ -28,7 +28,6 @@ import com.project.ide.service.JwtUserDetailsService;
 
 
 @RestController
-@CrossOrigin
 public class JwtAuthenticationController {
 
 	@Autowired

@@ -15,6 +15,7 @@ public class UserCode {
 	private String id;
 	@Lob
 	private String content;
+	private String title;
 	private String language;
 	private Integer type;
 	private Boolean sharable;
@@ -26,6 +27,20 @@ public class UserCode {
 	public String getId() {
 		return id;
 	}
+	
+	
+
+	public String getTitle() {
+		return title;
+	}
+
+
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+
 
 	public void setId(String id) {
 		this.id = id;
