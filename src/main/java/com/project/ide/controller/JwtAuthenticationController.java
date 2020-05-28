@@ -21,6 +21,7 @@ import com.project.ide.config.JwtTokenUtil;
 import com.project.ide.dao.UserDao;
 import com.project.ide.dto.JwtRequest;
 import com.project.ide.dto.JwtResponse;
+import com.project.ide.dto.MessageDto;
 import com.project.ide.dto.UserDto;
 import com.project.ide.model.User;
 import com.project.ide.service.JwtUserDetailsService;
@@ -57,18 +58,24 @@ public class JwtAuthenticationController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
+		
+		MessageDto newMsg = new MessageDto();
+		Boolean err = false;
 		User sameUsername = userDao.findByUsername(user.getUsername());
 		User sameEmail = userDao.findByEmail(user.getEmail());
 		String responseMsg = "";
 		if(sameUsername != null && sameEmail != null) {
 			responseMsg = "User with same credentials already exists";
+			err = true;
 		}
 		else if(sameUsername != null) {
 			responseMsg = "User with same username already exists";
+			err = true;
 		}
 		
 		else if(sameEmail != null) {
 			responseMsg = "User with same email already exists";
+			err = true;
 		}
 		else {
 			setupFiles(user.getUsername());
@@ -76,7 +83,12 @@ public class JwtAuthenticationController {
 			responseMsg = "Registered successfully";
 		}
 		
-		return new ResponseEntity(responseMsg, HttpStatus.OK);
+		
+		newMsg.setMsg(responseMsg);
+		newMsg.setErr(err);
+		
+		
+		return new ResponseEntity<Object>(newMsg, HttpStatus.OK);
 	}
 	
 	private void setupFiles(String dirname) throws IOException {

@@ -22,6 +22,7 @@ import com.project.ide.config.JwtTokenUtil;
 import com.project.ide.dao.UserCodeDao;
 import com.project.ide.dao.UserDao;
 import com.project.ide.dao.UserDefaultDao;
+import com.project.ide.dto.MessageDto;
 import com.project.ide.dto.UserCodeDto;
 import com.project.ide.dto.UserDefaultDto;
 import com.project.ide.dto.UserDto;
@@ -31,7 +32,7 @@ import com.project.ide.model.UserDefault;
 import com.project.ide.service.MailClient;
 
 @RestController
-@CrossOrigin
+
 public class UserController {
 
 	@Autowired
@@ -54,13 +55,15 @@ public class UserController {
 		return ResponseEntity.ok("Hello world");
 	}
 
+
 	@RequestMapping(value = "/get-user", method = RequestMethod.GET)
 	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String bearerToken) {
+		System.out.println(bearerToken);
 		User currUser = resolveCurrentUser(bearerToken);
 		return new ResponseEntity<>(currUser, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "save-code", method = RequestMethod.POST)
+	@RequestMapping(value = "/save-code", method = RequestMethod.POST)
 	public ResponseEntity<?> saveCode(@RequestHeader("Authorization") String bearerToken,
 			@RequestBody UserCodeDto userCodeDto) {
 		User currUser = resolveCurrentUser(bearerToken);
@@ -75,7 +78,7 @@ public class UserController {
 		return new ResponseEntity<>("Code has been saved", HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "save-defaults", method = RequestMethod.POST)
+	@RequestMapping(value = "/save-defaults", method = RequestMethod.POST)
 	public ResponseEntity<?> saveDefaults(@RequestHeader("Authorization") String bearerToken,
 			@RequestBody UserDefaultDto userDefaultDto) {
 		User currUser = resolveCurrentUser(bearerToken);
@@ -92,7 +95,7 @@ public class UserController {
 		return new ResponseEntity<>("User defaults have been saved", HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "change-password", method = RequestMethod.POST)
+	@RequestMapping(value = "/change-password", method = RequestMethod.POST)
 	public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String bearerToken,
 			@RequestBody UserDto userDto) {
 		User currUser = resolveCurrentUser(bearerToken);
@@ -127,13 +130,19 @@ public class UserController {
 	@RequestMapping(value = "/forgot-password", method = RequestMethod.GET)
 	public ResponseEntity<?> forgotPassword(@RequestParam(name = "email") String email) {
 		User existingUser = userDao.findByEmail(email);
+		MessageDto newMsg = new MessageDto();
 		if (existingUser == null) {
-			return new ResponseEntity<>("Invalid email", HttpStatus.UNAUTHORIZED);
+			newMsg.setErr(true);
+			newMsg.setMsg("Invalid email");
+			return new ResponseEntity<>(newMsg, HttpStatus.UNAUTHORIZED);
 		}
 		String newPassword = generatePassword(7);
 		existingUser.setPassword(bcryptEncoder.encode(newPassword));
+		userDao.save(existingUser);
 		mailClient.prepareAndSend(email, existingUser.getUsername(), newPassword);
-		return new ResponseEntity<>("Please check you email", HttpStatus.OK);
+		newMsg.setErr(false);
+		newMsg.setMsg("Please check you email");
+		return new ResponseEntity<>(newMsg, HttpStatus.OK);
 	}
 
 	private User resolveCurrentUser(String bearerToken) {
