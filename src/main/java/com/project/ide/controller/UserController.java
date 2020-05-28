@@ -107,6 +107,7 @@ public class UserController {
 	public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String bearerToken,
 			@RequestBody UserDto userDto) {
 		User currUser = resolveCurrentUser(bearerToken);
+		System.out.println(userDto.getPassword());
 		currUser.setPassword(bcryptEncoder.encode(userDto.getPassword()));
 		userDao.save(currUser);
 		MessageDto newMsg = new MessageDto();

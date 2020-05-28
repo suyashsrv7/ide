@@ -27,6 +27,7 @@ import com.project.ide.model.User;
 import com.project.ide.service.JwtUserDetailsService;
 
 
+@CrossOrigin
 @RestController
 public class JwtAuthenticationController {
 
