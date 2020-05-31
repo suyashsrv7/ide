@@ -3,6 +3,7 @@ package com.project.ide.controller;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import com.project.ide.config.JwtTokenUtil;
 import com.project.ide.dao.UserCodeDao;
 import com.project.ide.dao.UserDao;
 import com.project.ide.dao.UserDefaultDao;
+import com.project.ide.dto.CodeDto;
 import com.project.ide.dto.MessageDto;
 import com.project.ide.dto.UserCodeDto;
 import com.project.ide.dto.UserDefaultDto;
@@ -158,6 +160,27 @@ public class UserController {
 		newMsg.setErr(false);
 		newMsg.setMsg("Please check you email");
 		return new ResponseEntity<>(newMsg, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/get-code", method = RequestMethod.GET)
+	public ResponseEntity<?> getCode(@RequestParam(name = "codeId") String codeId) {
+		System.out.println(codeId);
+		Optional<UserCode> code = userCodeDao.findById(codeId);
+		if(code.isEmpty() || !code.get().getSharable()) {
+			MessageDto msgDto = new MessageDto();
+			msgDto.setErr(true);
+			msgDto.setMsg("Not found");
+			return new ResponseEntity(msgDto, HttpStatus.NOT_FOUND);
+		}
+		UserCode userCode = code.get();
+		CodeDto codeDto = new CodeDto();
+		codeDto.setAuthor(userCode.getUser().getUsername());
+		codeDto.setContent(userCode.getContent());
+		codeDto.setLanguage(userCode.getLanguage());
+		codeDto.setLink(userCode.getId());
+		codeDto.setTitle(userCode.getTitle());
+
+		return new ResponseEntity(codeDto, HttpStatus.OK);
 	}
 
 	private User resolveCurrentUser(String bearerToken) {
