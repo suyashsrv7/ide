@@ -34,6 +34,7 @@ public class CodeExecutionController {
 	@RequestMapping(value="/run", method=RequestMethod.POST)
 	public ResponseEntity<?> run(@RequestBody TaskRequestDto task, @RequestHeader("Authorization") String bearerToken) throws IOException, InterruptedException {
 		/* Task response setup */
+		System.out.println(task.toString());
 		TaskResponseDto taskResponse = new TaskResponseDto();
 		taskResponse.setTotalInputs(task.getInputs().size());
 		List<TestResult> resultList = new ArrayList<>();
@@ -57,6 +58,9 @@ public class CodeExecutionController {
 			if(i != 0) codeExecUtils.getCompileCmds().clear();
 			TestResult testResult = codeExecService.execute(codeExecUtils);
 			resultList.add(testResult);
+			if(testResult.getError()) {
+				break;
+			}
 		}
 		
 		taskResponse.setTestResults(resultList);

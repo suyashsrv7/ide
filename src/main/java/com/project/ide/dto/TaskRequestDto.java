@@ -35,6 +35,13 @@ public class TaskRequestDto implements Serializable{
 	public void setTimeLimit(long timeLimit) {
 		this.timeLimit = timeLimit;
 	}
+	@Override
+	public String toString() {
+		return "TaskRequestDto [language=" + language + ", code=" + code + ", inputs=" + inputs + ", timeLimit="
+				+ timeLimit + "]";
+	}
+	
+	
 	
 	
 }

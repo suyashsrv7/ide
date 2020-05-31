@@ -78,7 +78,7 @@ public class CodeExecutionUtils {
 			setFileExtension(".c");
 		} else if (language.equals("Java")) {
 			cmd1.add("javac");
-			cmd2.add("srcFile.java");
+			cmd1.add("srcFile.java");
 			cmd2.add("java");
 			cmd2.add("srcFile");
 			setFileExtension(".java");
